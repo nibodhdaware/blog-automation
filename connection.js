@@ -4,7 +4,7 @@ var mysqlConnection = mysql.createConnection({
   host: "localhost",
   user: "root",
   database: "Posts",
-  password: `${process.env.DB_PASS}`,
+  password: "nibodh1284",
   multipleStatements: true,
 });
 
