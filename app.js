@@ -39,7 +39,7 @@ const GET_USER_ARTICLES = `
     }
 `;
 
-const job = schedule.scheduleJob("* * * * *", function () {
+schedule.scheduleJob("* * * * *", function () {
   gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
     const articles = result.data.user.publication.posts;
     mysqlConnection.query("TRUNCATE Posts.PostInfo");
