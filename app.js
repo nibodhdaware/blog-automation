@@ -39,43 +39,30 @@ const GET_USER_ARTICLES = `
     }
 `;
 
-app.get("/", async (req, res) => {
-    schedule.scheduleJob("/10 * * * * *", function () {
-        gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
-            const articles = result.data.user.publication.posts;
-            mysqlConnection.query("TRUNCATE Posts.PostInfo");
-            articles.forEach((article) => {
-                const insert =
-                    "INSERT INTO Posts.PostInfo(title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
-                const title = article.title;
-                const brief = article.brief;
-                const slug = article.slug;
-                const dateAdded = article.dateAdded;
-                const contentMarkdown = article.contentMarkdown;
-                const coverImage = article.coverImage;
+schedule.scheduleJob("30 2 * * *", function () {
+    gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
+        const articles = result.data.user.publication.posts;
+        mysqlConnection.query("TRUNCATE Posts.PostInfo");
+        articles.forEach((article) => {
+            const insert =
+                "INSERT INTO Posts.PostInfo(title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
+            const title = article.title;
+            const brief = article.brief;
+            const slug = article.slug;
+            const dateAdded = article.dateAdded;
+            const contentMarkdown = article.contentMarkdown;
+            const coverImage = article.coverImage;
 
-                const values = [
-                    [
-                        title,
-                        brief,
-                        slug,
-                        dateAdded,
-                        contentMarkdown,
-                        coverImage,
-                    ],
-                ];
+            const values = [
+                [title, brief, slug, dateAdded, contentMarkdown, coverImage],
+            ];
 
-                mysqlConnection.query(
-                    insert,
-                    [values],
-                    (err, result, fields) => {
-                        if (err) console.log(err);
-                    },
-                );
-                mysqlConnection.query(
-                    "UPDATE Posts.PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
-                );
+            mysqlConnection.query(insert, [values], (err, result, fields) => {
+                if (err) console.log(err);
             });
+            mysqlConnection.query(
+                "UPDATE Posts.PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
+            );
         });
     });
 });
