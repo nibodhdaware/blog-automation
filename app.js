@@ -39,7 +39,7 @@ const GET_USER_ARTICLES = `
     }
 `;
 
-app.use("/", async (req, res) => {
+app.get("/", async (req, res) => {
     schedule.scheduleJob("/10 * * * * *", function () {
         gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
             const articles = result.data.user.publication.posts;
