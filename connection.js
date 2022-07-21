@@ -3,19 +3,19 @@ import mysql from "mysql2";
 dotenv.config();
 
 var mysqlConnection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: "Posts",
-  password: process.env.DB_PASS,
-  multipleStatements: true,
+    host: "127.0.0.1",
+    user: "root",
+    database: "Posts",
+    password: "nibodh1284",
+    multipleStatements: true,
 });
 
 mysqlConnection.connect((err) => {
-  if (err) {
-    console.log(err);
-  } else {
-    console.log("Connected");
-  }
+    if (err) {
+        console.log(err);
+    } else {
+        console.log("Connected");
+    }
 });
 
 // module.exports = mysqlConnection;
