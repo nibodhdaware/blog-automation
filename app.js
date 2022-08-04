@@ -1,7 +1,6 @@
-import bodyParser from "body-parser";
-import express from "express";
-import fetch from "node-fetch";
-import mysqlConnection from "./connection.js";
+const bodyParser = require("body-parser");
+const express = require("express");
+const mysqlConnection = require("./connection");
 
 const app = express();
 app.use(bodyParser.json());
