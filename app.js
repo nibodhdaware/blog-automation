@@ -43,7 +43,7 @@ gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
     // mysqlConnection.query("TRUNCATE Posts.PostInfo");
     articles.forEach((article) => {
         const insert =
-            "INSERT INTO Posts.PostInfo(id, title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
+            "INSERT INTO PostInfo(id, title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
         const id = article._id;
         const title = article.title;
         const brief = article.brief;
@@ -57,7 +57,7 @@ gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
         ];
 
         mysqlConnection.query(
-            "SELECT * FROM Posts.PostInfo WHERE id = '" + id + "';",
+            "SELECT * FROM PostInfo WHERE id = '" + id + "';",
             function (err, row) {
                 if (err) {
                     console.log("something went wrong");
@@ -76,7 +76,7 @@ gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
                             },
                         );
                         mysqlConnection.query(
-                            "UPDATE Posts.PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
+                            "UPDATE PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
                         );
                     }
                 }
