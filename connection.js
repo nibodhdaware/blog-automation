@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
 import mysql from "mysql2";
-dotenv.config();
 
 var mysqlConnection = mysql.createConnection({
     host: process.env.MYSQLHOST,
