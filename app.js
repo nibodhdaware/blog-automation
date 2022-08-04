@@ -1,7 +1,6 @@
 import bodyParser from "body-parser";
 import express from "express";
 import fetch from "node-fetch";
-import schedule from "node-schedule";
 import mysqlConnection from "./connection.js";
 
 const app = express();
@@ -27,6 +26,7 @@ const GET_USER_ARTICLES = `
         user(username: "nibodhdaware") {
             publication {
                 posts(page: $page) {
+                    _id
                     title
                     brief
                     slug
@@ -39,30 +39,49 @@ const GET_USER_ARTICLES = `
     }
 `;
 
-schedule.scheduleJob("30 2 * * *", function () {
-    gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
-        const articles = result.data.user.publication.posts;
-        mysqlConnection.query("TRUNCATE Posts.PostInfo");
-        articles.forEach((article) => {
-            const insert =
-                "INSERT INTO Posts.PostInfo(title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
-            const title = article.title;
-            const brief = article.brief;
-            const slug = article.slug;
-            const dateAdded = article.dateAdded;
-            const contentMarkdown = article.contentMarkdown;
-            const coverImage = article.coverImage;
+gql(GET_USER_ARTICLES, { page: 0 }).then((result) => {
+    const articles = result.data.user.publication.posts;
+    // mysqlConnection.query("TRUNCATE Posts.PostInfo");
+    articles.forEach((article) => {
+        const insert =
+            "INSERT INTO Posts.PostInfo(id, title, brief, slug, dateAdded, contentMarkdown, coverImage) VALUES ?";
+        const id = article._id;
+        const title = article.title;
+        const brief = article.brief;
+        const slug = article.slug;
+        const dateAdded = article.dateAdded;
+        const contentMarkdown = article.contentMarkdown;
+        const coverImage = article.coverImage;
 
-            const values = [
-                [title, brief, slug, dateAdded, contentMarkdown, coverImage],
-            ];
+        const values = [
+            [id, title, brief, slug, dateAdded, contentMarkdown, coverImage],
+        ];
 
-            mysqlConnection.query(insert, [values], (err, result, fields) => {
-                if (err) console.log(err);
-            });
-            mysqlConnection.query(
-                "UPDATE Posts.PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
-            );
-        });
+        mysqlConnection.query(
+            "SELECT * FROM Posts.PostInfo WHERE id = '" + id + "';",
+            function (err, row) {
+                if (err) {
+                    console.log("something went wrong");
+                    console.log(err);
+                    return;
+                } else {
+                    if (row && row.length) {
+                        console.log("Case row was found!");
+                        // do something with your row variable
+                    } else {
+                        mysqlConnection.query(
+                            insert,
+                            [values],
+                            (err, result, fields) => {
+                                if (err) console.log(err);
+                            },
+                        );
+                        mysqlConnection.query(
+                            "UPDATE Posts.PostInfo SET dateAdded = SUBSTR(dateAdded, 1, 10);",
+                        );
+                    }
+                }
+            },
+        );
     });
 });
