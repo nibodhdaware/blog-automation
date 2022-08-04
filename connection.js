@@ -3,10 +3,10 @@ import mysql from "mysql2";
 dotenv.config();
 
 var mysqlConnection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "root",
-    database: "Posts",
-    password: "nibodh1284",
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    database: process.env.MYSQLDATABASE,
+    password: process.env.MYSQLPASSWORD,
     multipleStatements: true,
 });
 
